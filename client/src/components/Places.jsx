@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom"
 import Perks from "./Perks";
+import axios from "axios";
 
 const Places = () => {
     const { action } = useParams()
@@ -35,8 +36,14 @@ const Places = () => {
         )
     }
 
-    const addPhotByLink = () => {
-        
+    const addPhotByLink = async (e) => {
+        e.preventDefault()
+        const { data: fileName } = await axios.post('/upload-by-link', { link: photoLink })
+        console.log(fileName);
+        setAddedPhotos(prev => {
+            return [...prev, fileName]
+        })
+        setPhotoLink('')
     }
     return (
       <div>
@@ -88,17 +95,30 @@ const Places = () => {
 
               {preInput("Photos", "Moret the merrier")}
               <div className="flex gap-2">
-                <input type="text" value={photoLink} onChange={e=> setPhotoLink(e.target.value)} placeholder="Add using a link ..jpg" />
-                <button className="bg-gray-200 grow px-4 rounded-2xl">
-                  Add Photo
+                <input
+                  type="text"
+                  value={photoLink}
+                  onChange={(e) => setPhotoLink(e.target.value)}
+                  placeholder="Add using a link ..jpg"
+                />
+                <button
+                  className="bg-gray-200 grow px-4 rounded-2xl"
+                  onClick={addPhotByLink}
+                >
+                  Add&nbsp;Photo
                 </button>
               </div>
-              <div className="mt-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                <button className="flex justify-center gap-1 border bg-transparent rounded-xl p-8 text-xl text-gray-600">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
+                        <div className="mt-2 gap-2 grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                            {addedPhotos.length > 0 && addedPhotos.map((key, link) => (
+                                <div>
+                                    <img className="rounded-2xl" src={'http://localhost:4000/uploads/' + link} alt="" />                        
+                                </div>
+                            ))}
+                            <button className="flex items-center justify-center gap-1 border bg-transparent rounded-xl p-2 text-xl text-gray-600">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
                     strokeWidth={1.5}
                     stroke="currentColor"
                     className="w-8 h-8 "
@@ -113,7 +133,10 @@ const Places = () => {
                 </button>
               </div>
               {preInput("Description", "Description to this place")}
-              <textarea value={description} onChange={e => setDescription(e.target.value)}/>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
 
               {preInput("Perks", "Select all perks of this place")}
               <div className="grid mt-2 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
@@ -121,7 +144,10 @@ const Places = () => {
               </div>
 
               {preInput("Extra Info", "House rules, etc.")}
-              <textarea value={extraInfo} onChange={e => setExtraInfo(e.target.value)}/>
+              <textarea
+                value={extraInfo}
+                onChange={(e) => setExtraInfo(e.target.value)}
+              />
 
               {preInput(
                 "Check In, Check Out, etc.",
@@ -131,15 +157,30 @@ const Places = () => {
               <div className="grid gap-2 sm:grid-cols-3">
                 <div>
                   <h3 className="mt-2 -mb-1">Check In time</h3>
-                  <input type="text" placeholder="14:00" value={checkIn} onChange={e => e.target.value}/>
+                  <input
+                    type="text"
+                    placeholder="14:00"
+                    value={checkIn}
+                    onChange={(e) => e.target.value}
+                  />
                 </div>
                 <div>
                   <h3 className="mt-2 -mb-1">Check Out time</h3>
-                  <input type="text" placeholder="14:00" value={checkOut} onChange={e => e.target.value}/>
+                  <input
+                    type="text"
+                    placeholder="14:00"
+                    value={checkOut}
+                    onChange={(e) => e.target.value}
+                  />
                 </div>
                 <div>
                   <h3 className="mt-2 -mb-1">Max number of guests</h3>
-                  <input type="number" placeholder={2} value={maxGuests} onChange={e => e.target.value}/>
+                  <input
+                    type="number"
+                    placeholder={2}
+                    value={maxGuests}
+                    onChange={(e) => e.target.value}
+                  />
                 </div>
               </div>
               <div>
